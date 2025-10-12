@@ -31,7 +31,7 @@ void Camera::lookAt(glm::vec3 point) {
     orientation[2] = forward;
 }
 
-void Camera::orbit(bool orbiting) {
+void Camera::orbit() {
     if (orbiting) {
         position = rot_y_axis(-PI/180) * position;
         lookAt(glm::vec3(0,0,0));

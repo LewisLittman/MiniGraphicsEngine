@@ -35,7 +35,7 @@ void handleEvent(SDL_Event event, Scene &scene, std::unique_ptr<Renderer>& rende
     else if (event.key.keysym.sym == SDLK_e) scene.camera.orientation = scene.camera.rot_y_axis(-PI/180) * scene.camera.orientation;
     else if (event.key.keysym.sym == SDLK_z) scene.camera.orientation = scene.camera.rot_x_axis(PI/180) * scene.camera.orientation;
     else if (event.key.keysym.sym == SDLK_x) scene.camera.orientation = scene.camera.rot_x_axis(-PI/180) * scene.camera.orientation;
-    // else if (event.key.keysym.sym == SDLK_o) orbiting = !orbiting;
+    else if (event.key.keysym.sym == SDLK_o) scene.camera.orbiting = !scene.camera.orbiting;
     else if (event.key.keysym.sym == SDLK_v) { renderer = std::make_unique<PointCloudRenderer>(); std::cout << "Renderer: Point Cloud" << std::endl; }
     else if (event.key.keysym.sym == SDLK_b) { renderer = std::make_unique<WireFrameRenderer>(); std::cout << "Renderer: Wire Frame" << std::endl; }
     else if (event.key.keysym.sym == SDLK_n) { renderer = std::make_unique<RasterisedRenderer>(); std::cout << "Renderer: Rasterised" << std::endl; }
@@ -64,6 +64,8 @@ int main(int argc, char *argv[]) {
 
     while (true) {
         if (window.pollForInputEvents(event)) handleEvent(event, scene, renderer);
+
+        scene.camera.orbit();
         window.clearPixels();
 
         if (auto rasterisedRenderer = dynamic_cast<RasterisedRenderer*>(renderer.get())) {

@@ -14,5 +14,5 @@ void RasterisedRenderer::render(float focalLength, DrawingWindow& window, const 
 }
 
 void RasterisedRenderer::render(float, DrawingWindow&, const Scene&) {
-    // Stub to satisfy linker; won't be called by your current code.
+    // Stub to satisfy linker; won't be called by current code
 }

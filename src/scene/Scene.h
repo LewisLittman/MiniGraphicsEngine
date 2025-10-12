@@ -20,3 +20,5 @@ public:
 };
 
 #endif
+
+// maybe add toggles for certain features like textures, shadows, etc.

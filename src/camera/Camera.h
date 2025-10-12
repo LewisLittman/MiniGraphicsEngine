@@ -14,7 +14,7 @@ public:
 
     void reset();
     void lookAt(glm::vec3 point);
-    void orbit(bool enable);
+    void orbit();
     glm::mat3 rot_y_axis(float r);
     glm::mat3 rot_x_axis(float r);
 };
