@@ -3,6 +3,7 @@
 #include <thread>
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
+#include "./Lighting/Lighting.h"
 
 
 void RayTraceRenderer::render(float focalLength, DrawingWindow& window, const Scene& scene) {
@@ -23,7 +24,8 @@ void RayTraceRenderer::render(float focalLength, DrawingWindow& window, const Sc
         RayTriangleIntersection rayHit = traceRay(scene.camera.position, rayDirection, scene, 3);
 
         if (rayHit.hit) {
-          float shadowIntensity = getShadowIntensity(rayHit, scene);
+          // float shadowIntensity = getShadowIntensity(rayHit, scene);
+          float shadowIntensity = Lighting::combinedLighting(rayHit, scene.lights[0], scene);
           uint32_t c = (255 << 24) + (int(rayHit.pointColour.red * shadowIntensity) << 16) + (int(rayHit.pointColour.green * shadowIntensity) << 8) + int(rayHit.pointColour.blue * shadowIntensity);
           window.setPixelColour(x, y, c);
         } else {
