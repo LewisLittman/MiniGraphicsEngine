@@ -1,4 +1,5 @@
 #include "Lighting.h"
+#include "../other/Constants.h"
 
 float Lighting::proximityLighting(const RayTriangleIntersection& point, const glm::vec3& lightPos, float lightStrength) {
     float distance = glm::length(lightPos - point.intersectionPoint);

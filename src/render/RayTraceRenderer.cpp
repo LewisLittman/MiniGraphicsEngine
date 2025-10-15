@@ -3,7 +3,8 @@
 #include <thread>
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
-#include "./Lighting/Lighting.h"
+#include "../lighting/Lighting.h"
+#include "../maps/Maps.h"
 
 
 void RayTraceRenderer::render(float focalLength, DrawingWindow& window, const Scene& scene) {
@@ -26,7 +27,8 @@ void RayTraceRenderer::render(float focalLength, DrawingWindow& window, const Sc
         if (rayHit.hit) {
           // float shadowIntensity = getShadowIntensity(rayHit, scene);
           float shadowIntensity = Lighting::combinedLighting(rayHit, scene.lights[0], scene);
-          uint32_t c = (255 << 24) + (int(rayHit.pointColour.red * shadowIntensity) << 16) + (int(rayHit.pointColour.green * shadowIntensity) << 8) + int(rayHit.pointColour.blue * shadowIntensity);
+          glm::vec3 colour = Maps::pixelManager(rayHit, scene);
+          uint32_t c = (255 << 24) + (int(colour.r * shadowIntensity) << 16) + (int(colour.g * shadowIntensity) << 8) + int(colour.b * shadowIntensity);
           window.setPixelColour(x, y, c);
         } else {
           uint32_t envMapColour = getEnvMapColour(rayDirection, scene);

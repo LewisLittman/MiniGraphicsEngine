@@ -11,8 +11,6 @@ public:
     static float angleOfIncidenceLighting(const RayTriangleIntersection& point, const glm::vec3& lightPos);
     static float specularLighting(const RayTriangleIntersection& point, const glm::vec3& lightPos, const Scene& scene);
     static float combinedLighting(const RayTriangleIntersection& point, const glm::vec3& lightPos, const Scene& scene);
-private:
-    static constexpr float PI = 3.14159265358979323846f;
 };
 
 #endif
