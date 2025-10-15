@@ -23,5 +23,5 @@ newmtl Cyan
 Kd 0.000000 1.000000 1.000000
 
 newmtl NormalMap
-Kd 1.000000 0.000000 0.000000
+Kd 0.666667 0.290196 0.266667
 map_Kd /home/lewis/CGWork/models/brick_normal_map.ppm

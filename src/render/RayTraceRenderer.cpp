@@ -24,16 +24,8 @@ void RayTraceRenderer::render(float focalLength, DrawingWindow& window, const Sc
         glm::vec3 rayDirection = glm::normalize(scene.camera.orientation * transposedPoint);
         RayTriangleIntersection rayHit = traceRay(scene.camera.position, rayDirection, scene, 3);
 
-        if (rayHit.hit) {
-          // float shadowIntensity = getShadowIntensity(rayHit, scene);
-          float shadowIntensity = Lighting::combinedLighting(rayHit, scene.lights[0], scene);
-          glm::vec3 colour = Maps::pixelManager(rayHit, scene);
-          uint32_t c = (255 << 24) + (int(colour.r * shadowIntensity) << 16) + (int(colour.g * shadowIntensity) << 8) + int(colour.b * shadowIntensity);
-          window.setPixelColour(x, y, c);
-        } else {
-          uint32_t envMapColour = getEnvMapColour(rayDirection, scene);
-          window.setPixelColour(x, y, envMapColour);
-        }
+        uint32_t pixelColour = Maps::pixelManager(rayHit, rayDirection, scene);
+        window.setPixelColour(x, y, pixelColour); 
       }
     }
   };
@@ -132,53 +124,4 @@ float RayTraceRenderer::getShadowIntensity(RayTriangleIntersection intersection,
     return shadowIntensity;
 }
 
-uint32_t RayTraceRenderer::getEnvMapColour(const glm::vec3& rayDirection, const Scene& scene) {
-    float absX = fabs(rayDirection.x);
-    float absY = fabs(rayDirection.y);
-    float absZ = fabs(rayDirection.z);
 
-    float u, v;
-    std::string face;
-    if (absX >= absY && absX >= absZ) {
-      if (rayDirection.x > 0) {
-        u = rayDirection.z / absX;
-        v = -rayDirection.y / absX;
-        face = "px";
-      } else {
-        u = -rayDirection.z / absX;
-        v = -rayDirection.y / absX;
-        face = "nx";
-      }
-    } else if (absY >= absX && absY >= absZ) {
-      if (rayDirection.y > 0) {
-        u = rayDirection.x / absY;
-        v = -rayDirection.z / absY;
-        face = "py";
-      } else {
-        u = rayDirection.x / absY;
-        v = rayDirection.z / absY;
-        face = "ny";
-      }
-    } else {
-      if (rayDirection.z > 0) {
-        u = -rayDirection.x / absZ;
-        v = -rayDirection.y / absZ;
-        face = "nz";
-      } else {
-        u = rayDirection.x / absZ;
-        v = -rayDirection.y / absZ;
-        face = "pz";
-      }
-    }
-    
-    float xRatio = 0.5f * (u + 1.0f);
-    float yRatio = 0.5f * (v + 1.0f);
-
-    const TextureMap& envmap = scene.textures.at(face);
-
-    float x = round(xRatio * (envmap.width - 1));
-    float y = round(yRatio * (envmap.height - 1));
-
-    float texturePixel = x + y * envmap.width;
-    return envmap.pixels[texturePixel];
-}

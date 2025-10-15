@@ -36,7 +36,6 @@ std::vector<ModelTriangle> parseObj(std::string filename, float scale, std::unor
           triangle.shadingMode = shadingMode;
           if (colour == "Mirror") {
             triangle.mirror = true;
-            std::cout << colour << std::endl;
           }
           if (name == "light") {
             triangle.name = name;
@@ -47,6 +46,26 @@ std::vector<ModelTriangle> parseObj(std::string filename, float scale, std::unor
           if (colour == "NormalMap") {
             triangle.normalMap = true;
             triangle.texture = true;
+
+            glm::vec3 edge1 = triangle.vertices[1] - triangle.vertices[0];
+            glm::vec3 edge2 = triangle.vertices[2] - triangle.vertices[0];
+
+            glm::vec2 deltaUV1 = glm::vec2(
+                triangle.texturePoints[1].x - triangle.texturePoints[0].x,
+                triangle.texturePoints[1].y - triangle.texturePoints[0].y
+            );
+            glm::vec2 deltaUV2 = glm::vec2(
+                triangle.texturePoints[2].x - triangle.texturePoints[0].x,
+                triangle.texturePoints[2].y - triangle.texturePoints[0].y
+            );
+
+            float f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
+
+            glm::vec3 tangent = f * (deltaUV2.y * edge1 - deltaUV1.y * edge2);
+            glm::vec3 bitangent = f * (-deltaUV2.x * edge1 + deltaUV1.x * edge2);
+
+            triangle.tangent = glm::normalize(tangent);
+            triangle.bitangent = glm::normalize(bitangent);
           }
           if (colour == "Texture") {
             triangle.texture = true;
