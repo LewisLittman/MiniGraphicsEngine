@@ -37,43 +37,11 @@ uint32_t Maps::pixelManager(const RayTriangleIntersection& intersection, const g
             break;
         }
     }
-
-    float shadowIntensity = RayTraceRenderer::getShadowIntensity(intersection, scene);
-    lightIntensity *= shadowIntensity;
+    if (intersection.intersectedTriangle.shadows) {
+        float shadowIntensity = RayTraceRenderer::getShadowIntensity(intersection, scene);
+        lightIntensity *= shadowIntensity;
+    }
     return (255 << 24) + (int(baseColour.r * lightIntensity) << 16) + (int(baseColour.g * lightIntensity) << 8) + int(baseColour.b * lightIntensity);
-
-
-
-    // if (intersection.hit) {
-    //   if (intersection.intersectedTriangle.texture && !intersection.intersectedTriangle.normalMap) { // textured but no normal map
-    //       const TextureMap& texture = scene.textures.at(intersection.intersectedTriangle.colour.name);
-    //       glm::vec3 texturePixel = getTexturePixel(intersection, texture);
-    //       float lightIntensity = Lighting::combinedLighting(intersection, scene.lights[0], scene);
-    //       return (255 << 24) + (int(texturePixel.r * lightIntensity) << 16) + (int(texturePixel.g * lightIntensity) << 8) + int(texturePixel.b * lightIntensity);
-    //   } else if (intersection.intersectedTriangle.normalMap) { // has normal map
-    //       const TextureMap& normalMap = scene.textures.at(intersection.intersectedTriangle.colour.name);
-    //       glm::vec3 normalMapPixel = getPixelNormal(intersection, normalMap);
-    //       float lightIntensity = Lighting::normalMapIntensity(intersection, normalMapPixel, scene.lights[0], scene);
-    //       return (255 << 24) + (int(intersection.pointColour.red * lightIntensity) << 16) + (int(intersection.pointColour.green * lightIntensity) << 8) + int(intersection.pointColour.blue * lightIntensity);
-    //   } else { // no texture or normal map
-    //       switch (intersection.intersectedTriangle.shadingMode) {
-    //           case GOURAUD: {
-    //               float lightIntensity = Lighting::gouraud(intersection, scene.lights[0], scene);
-    //               return (255 << 24) + (int(intersection.pointColour.red * lightIntensity) << 16) + (int(intersection.pointColour.green * lightIntensity) << 8) + int(intersection.pointColour.blue * lightIntensity);
-    //           }
-    //           case PHONG: {
-    //               float lightIntensity = Lighting::phong(intersection, scene.lights[0], scene);
-    //               return (255 << 24) + (int(intersection.pointColour.red * lightIntensity) << 16) + (int(intersection.pointColour.green * lightIntensity) << 8) + int(intersection.pointColour.blue * lightIntensity);
-    //           }
-    //           default: {
-    //               float lightIntensity = Lighting::combinedLighting(intersection, scene.lights[0], scene);
-    //               return (255 << 24) + (int(intersection.pointColour.red * lightIntensity) << 16) + (int(intersection.pointColour.green * lightIntensity) << 8) + int(intersection.pointColour.blue * lightIntensity);
-    //           }
-    //       }
-    //   }
-    // } else {
-    //   return getEnvMapColour(rayDirection, scene);
-    // }  
 }
 
 glm::vec3 Maps::getTexturePixel(const RayTriangleIntersection& point, const TextureMap& texture) {
