@@ -3,14 +3,10 @@
 #include "MtlParser.h"
 #include "ObjParser.h"
 #include "Scene.h"
+#include "../lighting/ShadingMode.h"
 #include <filesystem>
 #include <iostream>
 
-enum ShadingMode {
-  NONE = 0,
-  GOURAD = 1,
-  PHONG = 2
-};
 
 Scene SceneLoader::loadScene() {
     Scene scene;

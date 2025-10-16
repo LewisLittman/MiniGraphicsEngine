@@ -12,6 +12,8 @@ public:
     static float specularLighting(const RayTriangleIntersection& point, const glm::vec3& lightPos, const Scene& scene);
     static float combinedLighting(const RayTriangleIntersection& point, const glm::vec3& lightPos, const Scene& scene);
     static float normalMapIntensity(const RayTriangleIntersection& point, const glm::vec3& pointNormal, const glm::vec3& light, const Scene& scene);
+    static float gouraud(const RayTriangleIntersection& point, const glm::vec3& light, const Scene& scene);
+    static float phong(const RayTriangleIntersection& point, const glm::vec3& light, const Scene& scene);
 };
 
 #endif

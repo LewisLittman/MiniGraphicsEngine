@@ -54,3 +54,62 @@ float Lighting::normalMapIntensity(const RayTriangleIntersection& point, const g
   if (combinedIntensity > 1) combinedIntensity = 1;
   return combinedIntensity;
 }
+
+float Lighting::gouraud(const RayTriangleIntersection& point, const glm::vec3& light, const Scene& scene) {
+  std::vector<float> brightness;
+  for (int i = 0; i < point.intersectedTriangle.vertices.size(); i++) {
+    //proximity lighting for each vertex
+    float distance = length(light - point.intersectedTriangle.vertices[i]);
+    float proxIntensity = 20 / (4 * PI * distance * distance); //20 = light strength
+    if (proxIntensity > 1) proxIntensity = 1;
+    if (proxIntensity < 0) proxIntensity = 0;
+
+    //AoI lighting for each vertex
+    glm::vec3 AoIlightRay = normalize(glm::vec3(light - point.intersectedTriangle.vertices[i]));
+    float AoIintensity = dot(AoIlightRay, point.intersectedTriangle.vertexNormals[i]);
+    if(AoIintensity > 1) AoIintensity = 1;
+    if (AoIintensity < 0) AoIintensity = 0;
+
+    //Specular lighting for each vertex
+    glm::vec3 specLightRay = normalize(glm::vec3(point.intersectedTriangle.vertices[i] - light));
+    glm::vec3 reflectionRay = normalize(specLightRay - 2.0f * point.intersectedTriangle.vertexNormals[i] * dot(specLightRay, point.intersectedTriangle.vertexNormals[i]));
+    glm::vec3 viewRay = normalize(scene.camera.position - point.intersectedTriangle.vertices[i]);
+    float specIntensity = pow(dot(viewRay, reflectionRay), 256);
+    if (specIntensity > 1) specIntensity = 1;
+    if (specIntensity < 0) specIntensity = 0;
+
+    float combinedIntensity = 0.2 * proxIntensity + 0.7 * AoIintensity + 0.4 * specIntensity;
+    if (combinedIntensity < 0.2) combinedIntensity = 0.2;
+    if (combinedIntensity > 1) combinedIntensity = 1;
+    brightness.push_back(combinedIntensity);
+  }
+  float interpolatedCombinedBrightness = (1 - point.u - point.v) * brightness[0] + point.u * brightness[1] + point.v * brightness[2];
+  return interpolatedCombinedBrightness;
+}
+
+float Lighting::phong(const RayTriangleIntersection& point, const glm::vec3& light, const Scene& scene) {
+  glm::vec3 pointNormal = (1 - point.u - point.v) * point.intersectedTriangle.vertexNormals[0] + point.u * point.intersectedTriangle.vertexNormals[1] + point.v * point.intersectedTriangle.vertexNormals[2];
+  // pointNormal = normalize(pointNormal);
+  //proximity lighting for the point
+  float distance = length(light - point.intersectionPoint);
+  float proxIntensity = 10 / (4 * PI * distance * distance); //20 = light strength
+  if (proxIntensity > 1) proxIntensity = 1;
+  if (proxIntensity < 0) proxIntensity = 0;
+  //AoI lighting for the point
+  glm::vec3 AoIlightRay = normalize(glm::vec3(light - point.intersectionPoint));
+  float AoIintensity = dot(AoIlightRay, pointNormal);
+  if(AoIintensity > 1) AoIintensity = 1;
+  if (AoIintensity < 0) AoIintensity = 0;
+  //Specular lighting for each vertex
+  glm::vec3 specLightRay = normalize(glm::vec3(point.intersectionPoint- light));
+  glm::vec3 reflectionRay = normalize(specLightRay - 2.0f * pointNormal * dot(specLightRay, pointNormal));
+  glm::vec3 viewRay = normalize(scene.camera.position - point.intersectionPoint);
+  float specIntensity = pow(dot(viewRay, reflectionRay), 256);
+  if (specIntensity > 1) specIntensity = 1;
+  if (specIntensity < 0) specIntensity = 0;
+
+  float combinedIntensity = 0.3 * proxIntensity + 0.5 * AoIintensity + 0 * specIntensity;
+  if (combinedIntensity < 0.2) combinedIntensity = 0.2;
+  if (combinedIntensity > 1) combinedIntensity = 1;
+  return combinedIntensity;
+}
