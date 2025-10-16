@@ -1,6 +1,7 @@
 #include "Maps.h"
 #include "../lighting/Lighting.h"
 #include "../lighting/ShadingMode.h"
+#include "../render/RayTraceRenderer.h"
 
 uint32_t Maps::pixelManager(const RayTriangleIntersection& intersection, const glm::vec3& rayDirection, const Scene& scene) {
     if (!intersection.hit) {
@@ -37,7 +38,9 @@ uint32_t Maps::pixelManager(const RayTriangleIntersection& intersection, const g
         }
     }
 
-    return (255 << 24) + (int(intersection.pointColour.red * lightIntensity) << 16) + (int(intersection.pointColour.green * lightIntensity) << 8) + int(intersection.pointColour.blue * lightIntensity);
+    float shadowIntensity = RayTraceRenderer::getShadowIntensity(intersection, scene);
+    lightIntensity *= shadowIntensity;
+    return (255 << 24) + (int(baseColour.r * lightIntensity) << 16) + (int(baseColour.g * lightIntensity) << 8) + int(baseColour.b * lightIntensity);
 
 
 

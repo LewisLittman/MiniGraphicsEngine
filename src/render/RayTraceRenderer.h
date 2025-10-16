@@ -8,10 +8,9 @@ class RayTraceRenderer : public Renderer
 {
 public:
     void render(float focalLength, DrawingWindow& window, const Scene& scene) override;
-private:
-    RayTriangleIntersection traceRay(const glm::vec3& rayOrigin, const glm::vec3& rayDirection, const Scene& scene, int depth);
-    RayTriangleIntersection getClosestIntersection(const glm::vec3& rayOrigin, const glm::vec3& rayDirection, const Scene& scene);
-    float getShadowIntensity(RayTriangleIntersection intersection, const Scene& scene);
+    static RayTriangleIntersection traceRay(const glm::vec3& rayOrigin, const glm::vec3& rayDirection, const Scene& scene, int depth);
+    static RayTriangleIntersection getClosestIntersection(const glm::vec3& rayOrigin, const glm::vec3& rayDirection, const Scene& scene);
+    static float getShadowIntensity(RayTriangleIntersection intersection, const Scene& scene);
     uint32_t getEnvMapColour(const glm::vec3& rayDirection, const Scene& scene);
 };
 
