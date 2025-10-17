@@ -110,18 +110,38 @@ RayTriangleIntersection RayTraceRenderer::getClosestIntersection(const glm::vec3
     return rayIntersection;
 }
 
+// float RayTraceRenderer::getShadowIntensity(RayTriangleIntersection intersection, const Scene& scene) {
+//     float shadowIntensity = 1.0f;
+
+//     for (const auto& light : scene.lights) {
+//         glm::vec3 pointToLight = light - intersection.intersectionPoint;
+//         glm::vec3 offsetOrigin = intersection.intersectionPoint + 0.001f * intersection.intersectedTriangle.normal;
+//         RayTriangleIntersection shadowRayHit = traceRay(offsetOrigin, glm::normalize(pointToLight), scene, 1);
+//         if (shadowRayHit.hit && glm::length(shadowRayHit.intersectionPoint - intersection.intersectionPoint) < glm::length(pointToLight)) {
+//             shadowIntensity *= 0.5f; 
+//         }
+//     }
+//     return shadowIntensity;
+// }
+
 float RayTraceRenderer::getShadowIntensity(RayTriangleIntersection intersection, const Scene& scene) {
-    float shadowIntensity = 1.0f;
+    if (scene.lights.empty()) return 1.0f;
+
+    float totalVisibility = 0.0f;
 
     for (const auto& light : scene.lights) {
         glm::vec3 pointToLight = light - intersection.intersectionPoint;
         glm::vec3 offsetOrigin = intersection.intersectionPoint + 0.001f * intersection.intersectedTriangle.normal;
+
         RayTriangleIntersection shadowRayHit = traceRay(offsetOrigin, glm::normalize(pointToLight), scene, 1);
-        if (shadowRayHit.hit && glm::length(shadowRayHit.intersectionPoint - intersection.intersectionPoint) < glm::length(pointToLight)) {
-            shadowIntensity *= 0.5f; 
-        }
+
+        bool occluded = shadowRayHit.hit && 
+                        glm::length(shadowRayHit.intersectionPoint - intersection.intersectionPoint) < glm::length(pointToLight);
+
+        // Fully visible = 1, Occluded = 0.2
+        totalVisibility += occluded ? 0.2f : 1.0f;
     }
-    return shadowIntensity;
+
+    // Average
+    return totalVisibility / static_cast<float>(scene.lights.size());
 }
-
-

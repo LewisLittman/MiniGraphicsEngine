@@ -40,8 +40,38 @@ void handleEvent(SDL_Event event, Scene &scene, std::unique_ptr<Renderer>& rende
     else if (event.key.keysym.sym == SDLK_b) { renderer = std::make_unique<WireFrameRenderer>(); std::cout << "Renderer: Wire Frame" << std::endl; }
     else if (event.key.keysym.sym == SDLK_n) { renderer = std::make_unique<RasterisedRenderer>(); std::cout << "Renderer: Rasterised" << std::endl; }
     else if (event.key.keysym.sym == SDLK_m) { renderer = std::make_unique<RayTraceRenderer>(); std::cout << "Renderer: Ray Trace" << std::endl; }
-    // else if (event.key.keysym.sym == SDLK_n) { renderMode = 2; cout << "RenderMode: Ray Tracing" << endl; }
-    // else if (event.key.keysym.sym == SDLK_y) { printCamValues(); }
+    else if (event.key.keysym.sym == SDLK_p) { 
+        scene.softShadows = !scene.softShadows;
+        std::cout << "Soft Shadows: " << (scene.softShadows ? "ON" : "OFF") << std::endl;
+        
+        if (scene.softShadows) {
+            glm::vec3 mainLight = scene.lights[0];
+            scene.lights.clear();
+            scene.lights.push_back(mainLight); // Keep the main light
+            float spread = 0.05f;
+
+            // Deterministic offsets (no randomness)
+            std::vector<glm::vec3> offsets = {
+                { spread,  0.0f,    0.0f },
+                {-spread,  0.0f,    0.0f },
+                { 0.0f,    0.0f,    spread },
+                { 0.0f,    0.0f,   -spread },
+                { spread,  0.0f,    spread },
+                {-spread,  0.0f,   -spread },
+                { spread,  0.0f,   -spread },
+                {-spread,  0.0f,    spread }
+            };
+
+            for (const auto& offset : offsets) {
+                scene.lights.push_back(mainLight + offset);
+            }
+        } else {
+            // Reset to single central light
+            scene.lights.clear();
+            scene.lights.push_back(glm::vec3(0, 0.8f, 0));
+        } 
+    }
+     // else if (event.key.keysym.sym == SDLK_y) { printCamValues(); }
     // else if (event.key.keysym.sym == SDLK_u) { lights[0] = vec3(0, 1.2, 0); }
     // else if (event.key.keysym.sym == SDLK_i) { lights[0] = vec3(1, 1.2, 0); }
 //   } else if (event.type == SDL_MOUSEBUTTONDOWN) {

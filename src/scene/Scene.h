@@ -14,6 +14,7 @@ public:
     std::vector<glm::vec3> lights;
     std::unordered_map<std::string, TextureMap> textures;
     Camera camera;
+    bool softShadows = false;
 
     Scene() = default;
     void addTriangles(const std::vector<ModelTriangle>& newTriangles);
